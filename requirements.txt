@@ -6,3 +6,4 @@ urllib3==1.26.4
 Pillow==8.1.2
 gunicorn==19.9.0
 python-dateutil
+psycopg2==2.8.3
