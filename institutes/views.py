@@ -72,30 +72,31 @@ class InstituteRegistration(generics.CreateAPIView):
     """
     serializer_class = InstituitionRegistration
 
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=self.request.data)
-    #     if not serializer.is_valid():
-    #         return Response(
-    #                 data={'response': serializer.errors},
-    #                 status=status.HTTP_200_OK,
-    #                 )
-    #     else:
-    #         self.perform_create(serializer)
-    #         print(serializer.data, "seree")
-    #         headers = self.get_success_headers(serializer.data)
-    #         print('headers', headers, serializer.data['username'])
-    #         user_obj = User.objects.get(username=serializer.data['username'])
-    #         print(user_obj, type(serializer.data))
-    #         token, _ = Token.objects.get_or_create(user=user_obj)
-    #         headers = serializer.data
-    #         headers['token'] = token
-    #         headers['id'] = serializer.data['id']
-    #         print("token, _", token, _)
-    #         return Response(
-    #                 data={'token':token.key},
-    #                 headers=headers,
-    #                 status=status.HTTP_200_OK,
-    #                 )
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=self.request.data)
+        if not serializer.is_valid():
+            return Response(
+                    data={'response': serializer.errors},
+                    status=status.HTTP_200_OK,
+                    )
+        else:
+            self.perform_create(serializer)
+            print(serializer.data, "seree")
+            headers = self.get_success_headers(serializer.data)
+            print('headers', headers, serializer.data['username'])
+            user_obj = User.objects.get(username=serializer.data['username'])
+            print(user_obj, type(serializer.data))
+            token, _ = Token.objects.get_or_create(user=user_obj)
+            headers = serializer.data
+            headers['token'] = token
+            headers['id'] = serializer.data['id']
+            print("token, _", token, _)
+            return Response(
+                    data={'token':token.key, 'staff_data':{"id":user_obj.staff.id, "first_name":user_obj.first_name, "last_name":user_obj.last_name},
+                     "instituition_data":serializer.data},
+                    headers=headers,
+                    status=status.HTTP_200_OK,
+                    )
 
 
 class InstituitionLogin(generics.GenericAPIView):
