@@ -23,7 +23,7 @@ from django.views.static import serve
 
 
 urlpatterns = [
-    path('main/', include('app.urls')),
+    # path('main/', include('app.urls')),
     path('user/', include('usermanagement.urls')),
     path('institutes/', include('institutes.urls')),
     path('', include('admin_management.urls')),
