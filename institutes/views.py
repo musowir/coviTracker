@@ -13,7 +13,8 @@ from .serializers import (InstituitionSerializer,
                             UserLoginSerializer, 
                             StaffSerializer, 
                             AddUserSerializer,
-                            InstituiteProfileSerializer)
+                            InstituiteProfileSerializer, 
+                            VisitedUsersSerializer)
 from django.contrib.auth.models import User
 
 # import firebase_admin
@@ -177,6 +178,8 @@ class AddVisitedUsers(generics.GenericAPIView):
         instituite_id = self.request.data.get('instituite')
         try:
             instituite = Institute.objects.get(id=instituite_id)
+            VisitedUsers.objects.create(instituite=instituite, user=User.objects.all()[0])
+            VisitedUsers.objects.create(instituite=instituite, user=User.objects.all()[1])
             user = VisitedUsers.objects.create(instituite=instituite, image=self.request.data['image'])
         except Exception  as e:
             print(e)
@@ -259,7 +262,26 @@ class InstituiteProfile(generics.RetrieveUpdateAPIView):
     serializer_class = InstituiteProfileSerializer
     queryset = Institute.objects.all()
 
-    
+
+
+class VisitedUsersAPI(generics.ListAPIView):
+    serializer_class = VisitedUsersSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        id = self.kwargs['pk']
+        datetime_obj = self.request.GET.get("datetime")
+        print(datetime, "1111")
+        if datetime_obj:
+            datetime_obj = parser.parse(datetime_obj)
+        else:
+            datetime_obj = datetime.today()
+        try:
+            instituition_obj = Institute.objects.get(id=id)
+            queryset = VisitedUsers.objects.filter(instituite=instituition_obj, visited_date__gte=datetime_obj).order_by('-visited_date')
+        except Exception as e:
+            print(e)
+            queryset = []
+        return queryset
 
 
 #         {"date":"2021-04-11T05:41:00.000+0530",

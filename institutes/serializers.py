@@ -104,6 +104,13 @@ class AddUserSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class VisitedUsersSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = VisitedUsers
+        fields = "__all__"
+
+
 class InstituiteProfileSerializer(serializers.ModelSerializer):
     # Instituition Details
     name = serializers.CharField(required=True, label="Instituition Name")

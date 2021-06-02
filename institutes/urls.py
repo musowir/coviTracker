@@ -21,6 +21,7 @@ urlpatterns = [
     path('login/', views.InstituitionLogin.as_view(), name="InstituitionLogin"),
     path('register/', views.InstituteRegistration.as_view(), name="InstituteRegistration"),
     path('profile/<int:pk>/', views.InstituiteProfile.as_view(), name="InstituiteProfile"),
+    path('visiters/<int:pk>/', views.VisitedUsersAPI.as_view(), name="VisitedUsersAPI"),
     path('add-visited-users/', views.AddVisitedUsers.as_view(), name="AddVisitedUsers"),
     path('get-list/', views.GetInituitionList.as_view(), name="GetInituitionList"),
     path('send-alert/', views.SendAlert.as_view(), name="SendAlert"),
