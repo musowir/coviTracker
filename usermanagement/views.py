@@ -1,0 +1,82 @@
+from django.shortcuts import render
+from rest_framework import generics
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+from django.contrib.auth.models import User
+
+from usermanagement.serializers import CustomerProfileSerializer, UserLoginSerializer, TokenSerializer
+
+
+class UserRegistration(generics.CreateAPIView):
+    """ User Registration 
+        params :
+    """
+    serializer_class = CustomerProfileSerializer
+    # def post(self, *args, **kwargs):
+    #     print(self.request.data)
+    #     serializer = self.serializer_class(data=self.request.data)
+    #     if not serializer.is_valid():
+    #         print(serializer.errors)
+    #     return Response(
+    #             data={'token':None,
+    #                 'user_data': None},
+    #                 status=status.HTTP_200_OK,
+    #             )
+
+class UserLoginAPIView(generics.GenericAPIView):
+    authentication_classes = ()
+    permission_classes = ()
+    serializer_class = UserLoginSerializer
+
+    def post(self, request, *args, **kwargs):
+        print("Here is the call ", request.data)
+        if not self.request.data.get('fcm_token'):
+            return Response(
+                data={'token':None,
+                    'user_data': None,
+                    'msg': "invalid FCM Token"},
+                    status=status.HTTP_200_OK,
+                )
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.user
+            user.user_profile.fecm_token = self.request.data.get('fcm_token')
+            token, _ = Token.objects.get_or_create(user=user)
+            print(token)
+            return Response(
+                    data={'token':token.key,
+                    'user_data': CustomerProfileSerializer(user.user_profile).data},
+                    status=status.HTTP_200_OK,
+                    )
+        else:
+            return Response(
+                data={'token':None,
+                    'user_data': None},
+                    status=status.HTTP_200_OK,
+                )
+
+
+class UserExists(APIView):
+
+    def post(self, request, *args, **kwargs):
+        print(self.request.data)
+        username = request.data.get('username')
+        phone_ = False
+        email_ = False
+        if User.objects.filter(username=username).exists():
+            phone_ = True
+        elif User.objects.filter(email=username).exists() and User.objects.filter(email=username).count() == 1:
+            email_ = True
+
+        if phone_ or email_:
+            return Response(
+                data={'is_existing' : True},
+                    status=status.HTTP_200_OK,
+                )
+        else:
+            return Response(
+                data={'is_existing' : False},
+                    status=status.HTTP_200_OK,
+                )

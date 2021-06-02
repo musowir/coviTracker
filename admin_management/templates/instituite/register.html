@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{% static 'assets/assets/img/basic/favicon.ico' %}"" type="image/x-icon">
+    <title>Paper</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/app.css' %}">
+    <style>
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #F5F8FA;
+            z-index: 9998;
+            text-align: center;
+        }
+        .plane-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+        }
+    </style>
+</head>
+<body>
+<div id="app" class="paper-loading">
+<div class="light b-t">
+    <div id="primary" class="content-area"
+         data-bg-possition="center"
+         data-bg-repeat="false"
+         style="background: url('assets/img/icon/icon-circles.png');">
+        <main id="main" class="site-main" role="main">
+            <div class="container">
+                <div class="col-xl-8 mx-lg-auto p-t-b-80">
+                    <header class="text-center">
+                        <h1>WEALTH FOR SURE</h1>
+                        <img class="p-t-b-50" src="assets/img/icon/icon-join.png" alt="">
+                    </header>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-success {% endif %} " role="alert">
+                        {{message}}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <form action="{% url 'Login' %}" method="POST" novalidate>
+                        {% csrf_token %}
+                        <div class="row">
+                            {% for form_field in form.visible_fields %}
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        {{ form_field }}{{ form_field.errors }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            <!-- <div class="col-lg-12">
+                                <div class="form-group">
+                                    <input name="username" type="text" class="form-control form-control-lg" placeholder="Username">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <input name="password" type="password" class="form-control form-control-lg"
+                                           placeholder="Password">
+                                </div>
+                            </div> -->
+                            <div class="col-lg-12">
+                                <input type="submit" class="btn btn-success btn-lg btn-block" value="Submit">
+                             </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+        <!-- #main -->
+    </div>
+    <!-- #primary -->
+</div>
+
+</div>
+<!--End Page page_wrrapper -->
+<script src="{% static 'assets/js/app.js' %}"></script>
+
+</body>
+</html>
