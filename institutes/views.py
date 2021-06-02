@@ -16,11 +16,11 @@ from .serializers import (InstituitionSerializer,
                             InstituiteProfileSerializer)
 from django.contrib.auth.models import User
 
-import firebase_admin
-from firebase_admin import credentials
+# import firebase_admin
+# from firebase_admin import credentials
 from datetime import datetime
 from dateutil import parser
-from firebase_admin import credentials, messaging
+# from firebase_admin import credentials, messaging
 
 class StaffLogin(generic.View):
 
