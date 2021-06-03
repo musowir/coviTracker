@@ -5,8 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
+from . models import CustomerProfile
 
-from usermanagement.serializers import CustomerProfileSerializer, UserLoginSerializer, TokenSerializer
+from usermanagement.serializers import CustomerProfileSerializer, UserLoginSerializer, TokenSerializer, CustomerProfileUpdateSerializer
 
 
 class UserRegistration(generics.CreateAPIView):
@@ -14,16 +15,26 @@ class UserRegistration(generics.CreateAPIView):
         params :
     """
     serializer_class = CustomerProfileSerializer
-    # def post(self, *args, **kwargs):
-    #     print(self.request.data)
-    #     serializer = self.serializer_class(data=self.request.data)
-    #     if not serializer.is_valid():
-    #         print(serializer.errors)
-    #     return Response(
-    #             data={'token':None,
-    #                 'user_data': None},
-    #                 status=status.HTTP_200_OK,
-    #             )
+    def post(self, *args, **kwargs):
+        # print(self.request.data)
+        serializer = self.serializer_class(data=self.request.data)
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response(
+                    data={'token':None,
+                        'user_data': None,
+                        'masg':serializer.errors},
+                        status=status.HTTP_200_OK,
+                    )
+        else:
+            cust_obj = serializer.save()
+            user_obj = cust_obj.user
+            token, _ = Token.objects.get_or_create(user=user_obj)
+            return Response(
+                    data={'token':token.key,
+                        'user_data': self.serializer_class(instance=cust_obj).data},
+                        status=status.HTTP_200_OK,
+                    )
 
 class UserLoginAPIView(generics.GenericAPIView):
     authentication_classes = ()
@@ -80,3 +91,8 @@ class UserExists(APIView):
                 data={'is_existing' : False},
                     status=status.HTTP_200_OK,
                 )
+
+
+class UpdateUserProfile(generics.RetrieveUpdateAPIView):
+    serializer_class = CustomerProfileUpdateSerializer
+    queryset = CustomerProfile.objects.all()

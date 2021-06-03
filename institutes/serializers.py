@@ -105,10 +105,25 @@ class AddUserSerializer(serializers.ModelSerializer):
 
 
 class VisitedUsersSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    email = serializers.CharField(source='user.email', required=True, validators=[])
+    visited_date = serializers.SerializerMethodField()
+
+    def get_name(self, obj):
+        name = ""
+        if obj.user.first_name:
+            name += obj.user.first_name
+        if obj.user.last_name:
+            name += " " + obj.user.last_name
+        return name
+
+    def get_visited_date(self, obj):
+        from datetime import datetime
+        return datetime.strftime(obj.visited_date, "%d/%m/%y %H:%M")
     
     class Meta:
         model = VisitedUsers
-        fields = "__all__"
+        fields = ("name", "email", "visited_date")
 
 
 class InstituiteProfileSerializer(serializers.ModelSerializer):

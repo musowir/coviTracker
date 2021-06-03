@@ -278,7 +278,7 @@ class VisitedUsersAPI(generics.ListAPIView):
             datetime_obj = datetime.today()
         try:
             instituition_obj = Institute.objects.get(id=id)
-            queryset = VisitedUsers.objects.filter(instituite=instituition_obj, visited_date__gte=datetime_obj).order_by('-visited_date')
+            queryset = VisitedUsers.objects.filter(instituite=instituition_obj, visited_date__gte=datetime_obj, user__isnull=False).order_by('-visited_date')
         except Exception as e:
             print(e)
             queryset = []

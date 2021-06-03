@@ -8,6 +8,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from usermanagement.models import CustomerProfile
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from rest_framework.validators import UniqueValidator
 
 
 alphanumeric = validators.RegexValidator(r'^[0-9_a-zA-Z]*$', 'Only alphanumeric characters are allowed.')
@@ -118,3 +119,32 @@ class TokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Token
         fields = ("auth_token", "created")
+
+
+class CustomerProfileUpdateSerializer(serializers.ModelSerializer):
+    # Instituition Details
+    # name = serializers.CharField(required=True, label="Instituition Name")
+    phone_number = serializers.CharField(required=True, label="Phone Number", validators=[UniqueValidator(queryset=CustomerProfile.objects.all(), lookup='iexact')])
+    email = serializers.CharField(source='user.email', required=True, validators=[])
+
+    username = serializers.CharField(source='user.username', required=True, label="Staff Username")
+    first_name = serializers.CharField(source='user.first_name', required=True)
+    last_name = serializers.CharField(source='user.last_name', required=True)
+    password = serializers.CharField(source='user.password', required=True)
+    
+    class Meta:
+        model = CustomerProfile
+        fields = ("id", "first_name", "last_name", "phone_number", "email", "username", "profile_pic1", "password")
+
+    def update(self, instance, validated_data):
+        instance.user.username = validated_data.get('phone_number', instance.user.username)
+        instance.user.first_name = validated_data['user'].get('first_name', instance.user.first_name)
+        instance.user.last_name = validated_data['user'].get('last_name', instance.user.last_name)
+        instance.user.email = validated_data['user'].get('email', instance.user.email)
+        if validated_data['user'].get('password'):
+            instance.user.set_password(validated_data['user'].get('password'))
+            instance.user.save()
+        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+        instance.profile_pic1 = validated_data.get('profile_pic1', instance.profile_pic1)
+        instance.save()
+        return instance

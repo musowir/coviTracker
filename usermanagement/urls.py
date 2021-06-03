@@ -20,5 +20,6 @@ from usermanagement import views
 urlpatterns = [
     path('register/', views.UserRegistration.as_view(), name="UserRegistration"),
     path('user-check/', views.UserExists.as_view(), name="UserExists"),
+    path('profile/<int:pk>/', views.UpdateUserProfile.as_view(), name="UpdateUserProfile"),
     path('login/', views.UserLoginAPIView.as_view(), name="UserLoginAPIView"),
 ]

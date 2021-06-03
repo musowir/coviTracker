@@ -247,7 +247,9 @@
                                         {% for each in object_list %}
                                         <tr>
                                             <td class="w-10">
+                                                {% if each.user.user_profile.profile_pic1 %}
                                                 <img src="{{ each.user.user_profile.profile_pic1.url }}"  alt="">
+                                                {% endif %}
                                             </td>
                                             <td>
                                         <h6>{{each.user.user_profile.get_full_name}}</h6><small class="text-muted">{{each.visited_date}}</small></td>
