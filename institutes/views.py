@@ -263,6 +263,22 @@ class InstituiteProfile(generics.RetrieveUpdateAPIView):
     serializer_class = InstituiteProfileSerializer
     queryset = Institute.objects.all()
 
+    def put(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=self.request.data)
+        if serializer.is_valid():
+            data = self.update(request, *args, **kwargs)
+            institute_obj = self.get_object()
+            staff_obj = institute_obj.staff
+            return Response(data={'token': None,
+                                'staff_data': {"id":staff_obj.id, "first_name": staff_obj.user.first_name, "last_name": staff_obj.user.last_name},
+                                'instituition_data': InstituiteProfileSerializer(instance=institute_obj).data,
+                                },status=status.HTTP_200_OK)
+        else:
+            return Response(data={'token': None,
+                        'staff_data': {},
+                        'msg': serializer.errors},
+                        status=status.HTTP_200_OK)
+
 
 
 class VisitedUsersAPI(generics.ListAPIView):
