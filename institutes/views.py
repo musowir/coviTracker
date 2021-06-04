@@ -107,12 +107,12 @@ class InstituitionLogin(generics.GenericAPIView):
         if serializer.is_valid():
             print("valid")
             staff_obj = serializer.get_profile()
-            staff_data = StaffSerializer(staff_obj).data
-            instituition_data = InstituitionSerializer(staff_obj.my_instituite).data
+            # staff_data = StaffSerializer(staff_obj).data
+            instituition_data = InstituiteProfileSerializer(staff_obj.my_instituite).data
             token, _ = Token.objects.get_or_create(user=staff_obj.user)
             return Response(
                     data={'token':token.key,
-                    'staff_data': staff_data,
+                    'staff_data': {"id":staff_obj.id, "first_name": staff_obj.user.first_name, "last_name": staff_obj.user.last_name},
                     'instituition_data': instituition_data},
                     status=status.HTTP_200_OK,
                     )
