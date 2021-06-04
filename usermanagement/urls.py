@@ -21,5 +21,6 @@ urlpatterns = [
     path('register/', views.UserRegistration.as_view(), name="UserRegistration"),
     path('user-check/', views.UserExists.as_view(), name="UserExists"),
     path('profile/<int:pk>/', views.UpdateUserProfile.as_view(), name="UpdateUserProfile"),
+    path('feedback/<int:pk>/', views.CreateFeedack.as_view(), name="CreateFeedack"),
     path('login/', views.UserLoginAPIView.as_view(), name="UserLoginAPIView"),
 ]

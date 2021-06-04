@@ -71,6 +71,12 @@ GENDER = (
            ('O', 'Other'),
         )
 
+COVID_STATUS = (
+    ('N', 'Negative'),
+    ('P', 'Positive'),
+    ('V', 'Verification'),
+)
+
 class ContactAddress(models.Model):
     address1 = models.CharField(max_length=255, null=True, blank=True)
     address2 = models.CharField(max_length=255, null=True, blank=True)
@@ -133,6 +139,7 @@ class CustomerProfile(models.Model):
     remarks = models.TextField(null=True, blank=True)
     address_added = models.BooleanField(default=False)
     fcm_token = models.CharField(max_length=250, null=True, blank=True)
+    covid_status = models.CharField(choices=COVID_STATUS, max_length=125, null=True, blank=True, default='N')
     
     def get_full_name(self):
         if self.user.first_name and self.user.last_name:  
@@ -156,3 +163,9 @@ class CustomerProfile(models.Model):
     
     class Meta:
         ordering = ('-member_since',)
+
+
+class UserFeedback(models.Model):
+    customer = models.OneToOneField(CustomerProfile, related_name='user_feedback',on_delete = models.CASCADE)
+    feedback = models.TextField(max_length=250, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)

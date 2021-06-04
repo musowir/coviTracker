@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from django.core.validators import validate_email
 from rest_framework.validators import UniqueTogetherValidator
 
-from usermanagement.models import CustomerProfile
+from usermanagement.models import CustomerProfile, UserFeedback
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.validators import UniqueValidator
@@ -27,16 +27,20 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source='user.last_name', required=False)
     name = serializers.CharField(required=False)
     token = serializers.SerializerMethodField()
+    covid_status = serializers.SerializerMethodField()
 
     def get_token(self, obj):
         token, _ = Token.objects.get_or_create(user=obj.user)
         return token.key
 
+    def get_covid_status(self, obj):
+        return obj.get_covid_status_display()
+
     class Meta:
         model = CustomerProfile
-        fields = ('phone_number',"name", 'email', 'gender', 
+        fields = ('id', 'phone_number',"name", 'email', 'gender', 
                     'first_name', 'last_name', 'password', 'otp_verified', 
-                    'profile_pic1', 'profile_pic2', 'profile_pic3', 'token', 'fcm_token')
+                    'profile_pic1', 'profile_pic2', 'profile_pic3', 'token', 'fcm_token', 'covid_status')
         # extra_kwargs = {'first_name': {'required': False}}
 
     def __init__(self, *args, **kwargs):
@@ -148,3 +152,10 @@ class CustomerProfileUpdateSerializer(serializers.ModelSerializer):
         instance.profile_pic1 = validated_data.get('profile_pic1', instance.profile_pic1)
         instance.save()
         return instance
+
+
+class UserFeedbackSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserFeedback
+        fields = ("customer", "feedback")

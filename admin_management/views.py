@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.urls.base import reverse_lazy
 from django.shortcuts import redirect
 from institutes.models import Institute, VisitedUsers
-from usermanagement.models import CustomerProfile
+from usermanagement.models import CustomerProfile, UserFeedback
 from . forms import UserForm
 from django.contrib.auth import authenticate, login
 
@@ -81,3 +81,8 @@ class Login(generic.FormView):
         else:
             messages.error(self.request, "Invalid login credentials!")
         return redirect(self.request.META.get('HTTP_REFERER'))
+
+
+class FeedbackList(generic.ListView):
+    model = UserFeedback
+    template_name = "instituite/users_feedback.html"

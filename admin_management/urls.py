@@ -20,6 +20,7 @@ from admin_management import views
 urlpatterns = [
     path('instituition-list/', views.InstituitionList.as_view(), name="InstituitionList"),
     path('user-list/', views.UserList.as_view(), name="UserList"),
+    path('feedback-list/', views.FeedbackList.as_view(), name="FeedbackList"),
     path('verify/<int:pk>/', views.InstituitionVerification.as_view(), name="InstituitionVerification"),
     path('visited-users-list/<int:pk>/', views.VisitedUserList.as_view(), name="VisitedUserList"),
     path('', views.Login.as_view(), name="Login"),

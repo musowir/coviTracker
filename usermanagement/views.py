@@ -7,7 +7,10 @@ from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from . models import CustomerProfile
 
-from usermanagement.serializers import CustomerProfileSerializer, UserLoginSerializer, TokenSerializer, CustomerProfileUpdateSerializer
+from usermanagement.serializers import (CustomerProfileSerializer, 
+                            UserLoginSerializer, TokenSerializer, 
+                            CustomerProfileUpdateSerializer, 
+                            UserFeedbackSerializer)
 
 
 class UserRegistration(generics.CreateAPIView):
@@ -96,3 +99,7 @@ class UserExists(APIView):
 class UpdateUserProfile(generics.RetrieveUpdateAPIView):
     serializer_class = CustomerProfileUpdateSerializer
     queryset = CustomerProfile.objects.all()
+
+
+class CreateFeedack(generics.CreateAPIView):
+    serializer_class = UserFeedbackSerializer
