@@ -136,11 +136,11 @@ class InstituiteProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='staff.user.username', required=True, label="Staff Username")
     first_name = serializers.CharField(source='staff.user.first_name', required=True)
     last_name = serializers.CharField(source='staff.user.last_name', required=True)
-    password = serializers.CharField(source='staff.user.password', required=True)
+    password = serializers.CharField(source='staff.user.password')
     
     class Meta:
         model = Institute
-        fields = ("id", "name", "contact_no", "location", "email", "image", 
+        fields = ("id", "name", "contact_no", "location", "email", 
                 "first_name", "last_name", "password", "username")
 
     def update(self, instance, validated_data):
