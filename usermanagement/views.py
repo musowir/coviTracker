@@ -39,6 +39,7 @@ class UserRegistration(generics.CreateAPIView):
                         status=status.HTTP_200_OK,
                     )
 
+
 class UserLoginAPIView(generics.GenericAPIView):
     authentication_classes = ()
     permission_classes = ()
