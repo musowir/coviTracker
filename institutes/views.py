@@ -277,7 +277,7 @@ class InstituiteProfile(generics.RetrieveUpdateAPIView):
                                 'instituition_data': InstituiteProfileSerializer(instance=institute_obj).data,
                                 },status=status.HTTP_200_OK)
         else:
-            print(serializers.errors)
+            print(serializer.errors)
             return Response(data={'token': None,
                         'staff_data': {},
                         'msg': serializer.errors},
