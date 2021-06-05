@@ -73,8 +73,10 @@ class InstituteRegistration(generics.CreateAPIView):
     serializer_class = InstituitionRegistration
 
     def create(self, request, *args, **kwargs):
+        print("REQUEST DATA REG: ",self.request.data)
         serializer = self.get_serializer(data=self.request.data)
         if not serializer.is_valid():
+            print("serializer.errors", serializer.errors)
             return Response(
                     data={'response': serializer.errors},
                     status=status.HTTP_200_OK,
@@ -92,7 +94,7 @@ class InstituteRegistration(generics.CreateAPIView):
             headers['id'] = serializer.data['id']
             print("token, _", token, _)
             return Response(
-                    data={'token':token.key, 'staff_data':{"id":user_obj.staff.id, "first_name":user_obj.first_name, "last_name":user_obj.last_name},
+                    data={'token':token.key, 'staff_data':{"id":user_obj.staff.id, "first_name":user_obj.first_name, "last_name":user_obj.last_name,  "username": user_obj.username},
                      "instituition_data":serializer.data},
                     headers=headers,
                     status=status.HTTP_200_OK,
@@ -103,6 +105,7 @@ class InstituitionLogin(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
 
     def post(self, *args, **kwargs):
+        print("REQUEST DATA:LOGIN ",self.request.data)
         serializer = self.serializer_class(data=self.request.data)
         if serializer.is_valid():
             print("valid")
@@ -112,7 +115,7 @@ class InstituitionLogin(generics.GenericAPIView):
             token, _ = Token.objects.get_or_create(user=staff_obj.user)
             return Response(
                     data={'token':token.key,
-                    'staff_data': {"id":staff_obj.id, "first_name": staff_obj.user.first_name, "last_name": staff_obj.user.last_name},
+                    'staff_data': {"id":staff_obj.id, "first_name": staff_obj.user.first_name, "last_name": staff_obj.user.last_name,  "username": staff_obj.user.username},
                     'instituition_data': instituition_data},
                     status=status.HTTP_200_OK,
                     )
@@ -270,7 +273,7 @@ class InstituiteProfile(generics.RetrieveUpdateAPIView):
             institute_obj = self.get_object()
             staff_obj = institute_obj.staff
             return Response(data={'token': None,
-                                'staff_data': {"id":staff_obj.id, "first_name": staff_obj.user.first_name, "last_name": staff_obj.user.last_name},
+                                'staff_data': {"id":staff_obj.id, "first_name": staff_obj.user.first_name, "last_name": staff_obj.user.last_name, "username": staff_obj.user.username},
                                 'instituition_data': InstituiteProfileSerializer(instance=institute_obj).data,
                                 },status=status.HTTP_200_OK)
         else:

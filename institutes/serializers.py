@@ -76,6 +76,7 @@ class UserLoginSerializer(serializers.Serializer):
         self.user = None
 
     def validate(self, attrs):
+        print("user exists", User.objects.filter(username=attrs.get("username")).exists())
         if not User.objects.filter(username=attrs.get("username")).exists():
             raise serializers.ValidationError(self.default_error_messages['inactive_username'])
         elif not authenticate(username=attrs.get("username"), password=attrs.get('password')):
@@ -132,7 +133,7 @@ class InstituiteProfileSerializer(serializers.ModelSerializer):
     contact_no = serializers.CharField(required=True, label="Contact no.")
     email = serializers.CharField(source='staff.user.email', required=True, validators=[])
 
-    # username = serializers.CharField(source='staff.user.username', required=True, label="Staff Username")
+    username = serializers.CharField(source='staff.user.username', required=True, label="Staff Username")
     first_name = serializers.CharField(source='staff.user.first_name', required=True)
     last_name = serializers.CharField(source='staff.user.last_name', required=True)
     password = serializers.CharField(source='staff.user.password', required=True)
@@ -140,18 +141,23 @@ class InstituiteProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institute
         fields = ("id", "name", "contact_no", "location", "email", "image", 
-                "first_name", "last_name", "password")
+                "first_name", "last_name", "password", "username")
 
     def update(self, instance, validated_data):
-        instance.staff.user.first_name = validated_data['staff']['user'].get('first_name', instance.staff.user.first_name)
-        instance.staff.user.last_name = validated_data['staff']['user'].get('last_name', instance.staff.user.last_name)
-        instance.staff.user.email = validated_data['staff']['user'].get('email', instance.staff.user.email)
-        if validated_data['staff']['user'].get('password'):
-            instance.staff.user.set_password(validated_data['staff']['user'].get('password'))
-            instance.staff.user.save()
-        instance.name = validated_data.get('name', instance.name)
-        instance.contact_no = validated_data.get('name', instance.contact_no)
-        instance.location = validated_data.get('location', instance.image)
-        instance.image = validated_data.get('image', instance.image)
-        instance.save()
-        return instance
+        if validated_data['staff']['user'].get('username') and User.objects.filter(username=validated_data['staff']['user'].get('username')).exclude(staff__user=instance.staff.user).exists():
+            print("username not exists")
+            raise serializers.ValidationError("Username already exists!.")
+        else:
+            instance.staff.user.username = validated_data['staff']['user'].get('username', instance.staff.user.username)
+            instance.staff.user.first_name = validated_data['staff']['user'].get('first_name', instance.staff.user.first_name)
+            instance.staff.user.last_name = validated_data['staff']['user'].get('last_name', instance.staff.user.last_name)
+            instance.staff.user.email = validated_data['staff']['user'].get('email', instance.staff.user.email)
+            if validated_data['staff']['user'].get('password'):
+                instance.staff.user.set_password(validated_data['staff']['user'].get('password'))
+                instance.staff.user.save()
+            instance.name = validated_data.get('name', instance.name)
+            instance.contact_no = validated_data.get('contact_no', instance.contact_no)
+            instance.location = validated_data.get('location', instance.image)
+            instance.image = validated_data.get('image', instance.image)
+            instance.save()
+            return instance
