@@ -169,3 +169,12 @@ class UserFeedback(models.Model):
     customer = models.OneToOneField(CustomerProfile, related_name='user_feedback',on_delete = models.CASCADE)
     feedback = models.TextField(max_length=250, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+
+class UserPositivityLog(models.Model):
+    customer = models.ForeignKey(CustomerProfile, related_name='postivity_logs',on_delete = models.CASCADE)
+    covid_status = models.CharField(choices=COVID_STATUS, max_length=125, null=True, blank=True, default='N')
+    timestamp = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-timestamp']

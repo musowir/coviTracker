@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="{% static 'assets/img/basic/favicon.ico' %}" type="image/x-icon">
-    <title>Paper</title>
+    <title>CovidTracker</title>
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'assets/css/app.css' %}">
     <style>
@@ -51,20 +51,21 @@
 <aside class="main-sidebar fixed offcanvas shadow">
     <section class="sidebar">
         <div class="user-panel">
-            <div class="image float-left">
-                <img class="user_avatar" src="{% static 'assets/img/dummy/u2.png' %}" alt="User Image">
-            </div>
-            <div class="info">
-                <h6 class="p-t-10">{{request.user}}</h6>
-                <a href="#"><i class="icon-circle text-primary blink"></i> Online</a>
-            </div>
+                <div class="image float-left">
+                    <img class="user_avatar" src="{% static 'assets/img/dummy/u2.png' %}" alt="User Image">
+                </div>
+                <div class="info">
+                    <h6 class="p-t-10">{{request.user}}</h6>
+                    <a href="#"><i class="icon-circle text-primary blink"></i> Online</a>
+                </div>
         </div>
         <ul class="sidebar-menu">
             <li><a href="{% url 'UserList' %}"><i class="icon icon-user-circle"></i>Users List</a>
-            <li><a href="{% url 'InstituitionList' %}"><i class="icon icon-user-circle"></i>Institution List</a>
-            <li><a href="{% url 'PositiveUserList' %}"><i class="icon icon-user-circle"></i>Covid Positive List</a>
-                <li><a href="{% url 'FeedbackList' %}"><i class="icon icon-user-circle"></i>Feedback List</a>
-            </ul>
+                <li><a href="{% url 'InstituitionList' %}"><i class="icon icon-user-circle"></i>Institution List</a>
+                    <li><a href="{% url 'PositiveUserList' %}"><i class="icon icon-user-circle"></i>Covid Positive List</a>
+                        <li><a href="{% url 'FeedbackList' %}"><i class="icon icon-user-circle"></i>Feedback List</a>
+                        
+                    </ul>
     </section>
 </aside>
 <!--Sidebar End-->
@@ -83,13 +84,14 @@
     </div>
     <header class="blue accent-3 relative">
         <div class="navbar navbar-expand navbar-dark d-flex justify-content-end bd-navbar">
+         
         </div>
         <div class="container-fluid text-white">
             <div class="row p-t-b-10 ">
                 <div class="col">
                     <h4>
                         <i class="icon-package"></i>
-                        Visited Users List
+                        Covid History of {{object.get_full_name}}
                     </h4>
                 </div>
             </div>
@@ -110,7 +112,7 @@
     </header>
     {% if messages %}
     {% for message in messages %}
-    <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-success {% endif %} " role="alert" style="margin-top: 1%F;">
+    <div class="alert {% if message.tags == 'error' %} alert-danger {% else %} alert-success {% endif %}" role="alert" style="margin: 1%;">
         {{message}}
     </div>
     {% endfor %}
@@ -121,113 +123,38 @@
                 <div class="col-md-12">
                     <div class="card no-b">
                         <div class="collapse show" id="salesCard">
-                            
                             <div class="card-body p-0">
                                 <div class="table-responsive">
                                     <table class="table table-hover ">
                                         <tbody>
-                                        {% for each in object_list %}
+                                            <th>User</th>
+                                            <th></th>
+                                            <th>User Contact</th>
+                                            <th>Covid Status</th>
+                                            <th>Date</th>
+                                        {% for each in object.postivity_logs.all %}
                                         <tr>
                                             <td class="w-10">
-                                                <img src="{{ each.user.user_profile.profile_pic1.url }}"  alt="">
+                                                {% if object.profile_pic1 %}
+                                                <img src="{{ object.profile_pic1.url }}"  alt="">
+                                                {% endif %}
                                             </td>
                                             <td>
-                                        <h6>{{each.user.user_profile.get_full_name}}</h6><small class="text-muted">{{each.visited_date}}</small></td>
-                                            <!-- {% if each.is_verified %}
-                                            <td><span class="badge badge-success">Verified</span></td>
-                                            {% else %}
-                                            <td><span class="badge badge-danger">Not Verified</span></td>
-                                            {% endif %} -->
                                             <td>
-                                                <span>{{ each.user.username }}</span><br>
-                                                <span>{{ each.user.email }}</span>
+                                                <span>{{ object.get_full_name }}</span><br>
+                                                <span>{{ object.user.username }}</span><br>
+                                                <span>{{ object.user.email }}</span>
                                             </td>
-                                                 <td>
-                                                     <!-- <a href="{% url 'InstituitionVerification' each.id %}"><i class="icon icon-pencil-square-o"></i> Click to verify</a>
-                                                     <a href="{% url 'VisitedUserList' each.id %}"><i class="icon icon-pencil-square-o"></i> Visited Users</a> -->
-                                                 </td>
+                                            <td>
+                                                <span>
+                                                    {{each.get_covid_status_display}}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {{each.timestamp}}
+                                            </td>
                                         </tr>
                                         {% endfor %}
-                                        <!-- <tr>
-                                            <td class="w-10">
-                                                <img src="{% static 'assets/img/demo/s2.png' %}"  alt="">
-                                            </td>
-                                            <td>
-                                                <h6>Apple Product</h6><small class="text-muted">Mobile Phones</small></td>
-                                            <td>$250</td>
-                                            <td><span class="badge badge-success">Published</span></td>
-                                                 <td>
-                                                     <span><i class="icon icon-data_usage"></i> 5 days ago</span><br>
-                                                     <span><i class="icon icon-timer"></i> 5 September, 2017</span>
-                                                 </td>
-                                                 <td>
-                                                     <a href=""><i class="icon icon-pencil-square-o"></i> Edit item</a>
-                                                 </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="w-10">
-                                                <img src="{% static 'assets/img/demo/s3.png' %}"  alt="">
-                                            </td>
-                                            <td>
-                                                <h6>Apple Product</h6><small class="text-muted">Mobile Phones</small></td>
-                                            <td>$250</td>
-                                            <td><span class="badge badge-danger">Pending</span></td>
-                                                 <td>
-                                                     <span><i class="icon icon-data_usage"></i> 5 days ago</span><br>
-                                                     <span><i class="icon icon-timer"></i> 5 September, 2017</span>
-                                                 </td>
-                                                 <td>
-                                                     <a href=""><i class="icon icon-pencil-square-o"></i> Edit item</a>
-                                                 </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="w-10">
-                                                <img src="{% static 'assets/img/demo/s4.png' %}"  alt="">
-                                            </td>
-                                            <td>
-                                                <h6>Apple Product</h6><small class="text-muted">Mobile Phones</small></td>
-                                            <td>$250</td>
-                                            <td><span class="badge badge-success">Published</span></td>
-                                                 <td>
-                                                     <span><i class="icon icon-data_usage"></i> 5 days ago</span><br>
-                                                     <span><i class="icon icon-timer"></i> 5 September, 2017</span>
-                                                 </td>
-                                                 <td>
-                                                     <a href=""><i class="icon icon-pencil-square-o"></i> Edit item</a>
-                                                 </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="w-10">
-                                                <img src="{% static 'assets/img/demo/s5.png' %}"  alt="">
-                                            </td>
-                                            <td>
-                                                <h6>Apple Product</h6><small class="text-muted">Mobile Phones</small></td>
-                                            <td>$250</td>
-                                            <td><span class="badge badge-primary">Sold Out</span></td>
-                                                 <td>
-                                                     <span><i class="icon icon-data_usage"></i> 5 days ago</span><br>
-                                                     <span><i class="icon icon-timer"></i> 5 September, 2017</span>
-                                                 </td>
-                                                 <td>
-                                                     <a href=""><i class="icon icon-pencil-square-o"></i> Edit item</a>
-                                                 </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="w-10">
-                                                <img src="{% static 'assets/img/demo/s6.png' %}"  alt="">
-                                            </td>
-                                            <td>
-                                                <h6>Apple Product</h6><small class="text-muted">Mobile Phones</small></td>
-                                            <td>$250</td>
-                                            <td><span class="badge badge-warning">Low Stock</span></td>
-                                                 <td>
-                                                     <span><i class="icon icon-data_usage"></i> 5 days ago</span><br>
-                                                     <span><i class="icon icon-timer"></i> 5 September, 2017</span>
-                                                 </td>
-                                                 <td>
-                                                     <a href=""><i class="icon icon-pencil-square-o"></i> Edit item</a>
-                                                 </td>
-                                        </tr> -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -240,6 +167,26 @@
         </div>
     </div>
 </div>
+
+<div class="modal" tabindex="-1" role="dialog" id="covid_status_modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Change Covid Status</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="con_body"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="submitOK">Change</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <!-- Login modal -->
 <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -335,12 +282,32 @@
         </div>
     </div>
 </div>
+<div style="display: none;">
+    <form method="POST" action="" name="covid_status_form" id="covid_status_form_id">
+        {% csrf_token %}
+    </form>
+</div>
+
 
 
 </div>
 {% endblock %}
 <!--End Page page_wrrapper -->
 <script src="{% static 'assets/js/app.js' %}"></script>
+<script>
+    $(document).ready(function(){
+        $("#submitOK").on('click', function(){
+            $("#covid_status_form_id").submit();
+        }); 
+    });
+    function change_covid_status(el){
+        url = $(el).attr('url');
+        text_ = "Are you sure you want to change the covid status of " + $(el).attr('name')
+        $("#con_body").text(text_)
+        $("#covid_status_modal").modal('show');
+        $("#covid_status_form_id").attr('action', url)
+    }
+</script>
 
 </body>
 </html>

@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="{% static 'assets/img/basic/favicon.ico' %}" type="image/x-icon">
-    <title>Paper</title>
+    <title>CovidTracker</title>
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'assets/css/app.css' %}">
     <style>
@@ -51,13 +51,13 @@
 <aside class="main-sidebar fixed offcanvas shadow">
     <section class="sidebar">
         <div class="user-panel">
-            <div class="image float-left">
-                <img class="user_avatar" src="{% static 'assets/img/dummy/u2.png' %}" alt="User Image">
-            </div>
-            <div class="info">
-                <h6 class="p-t-10">{{request.user}}</h6>
-                <a href="#"><i class="icon-circle text-primary blink"></i> Online</a>
-            </div>
+                <div class="image float-left">
+                    <img class="user_avatar" src="{% static 'assets/img/dummy/u2.png' %}" alt="User Image">
+                </div>
+                <div class="info">
+                    <h6 class="p-t-10">{{request.user}}</h6>
+                    <a href="#"><i class="icon-circle text-primary blink"></i> Online</a>
+                </div>
         </div>
         <ul class="sidebar-menu">
             <li><a href="{% url 'UserList' %}"><i class="icon icon-user-circle"></i>Users List</a>
@@ -89,7 +89,7 @@
                 <div class="col">
                     <h4>
                         <i class="icon-package"></i>
-                        Visited Users List
+                        Corona Positive Users List
                     </h4>
                 </div>
             </div>
@@ -121,113 +121,34 @@
                 <div class="col-md-12">
                     <div class="card no-b">
                         <div class="collapse show" id="salesCard">
-                            
                             <div class="card-body p-0">
                                 <div class="table-responsive">
                                     <table class="table table-hover ">
                                         <tbody>
+                                            <th>User</th>
+                                            <th></th>
+                                            <th>User Contact</th>
+                                            <th>Started Date</th>
+                                        {% if object_list %}
                                         {% for each in object_list %}
                                         <tr>
                                             <td class="w-10">
-                                                <img src="{{ each.user.user_profile.profile_pic1.url }}"  alt="">
+                                                {% if each.profile_pic1 %}
+                                                <img src="{{ each.profile_pic1.url }}"  alt="">
+                                                {% endif %}
                                             </td>
                                             <td>
-                                        <h6>{{each.user.user_profile.get_full_name}}</h6><small class="text-muted">{{each.visited_date}}</small></td>
-                                            <!-- {% if each.is_verified %}
-                                            <td><span class="badge badge-success">Verified</span></td>
-                                            {% else %}
-                                            <td><span class="badge badge-danger">Not Verified</span></td>
-                                            {% endif %} -->
+                                        <h6>{{each.get_full_name}}</h6><small class="text-muted">{{each.visited_date}}</small></td>
                                             <td>
                                                 <span>{{ each.user.username }}</span><br>
                                                 <span>{{ each.user.email }}</span>
                                             </td>
-                                                 <td>
-                                                     <!-- <a href="{% url 'InstituitionVerification' each.id %}"><i class="icon icon-pencil-square-o"></i> Click to verify</a>
-                                                     <a href="{% url 'VisitedUserList' each.id %}"><i class="icon icon-pencil-square-o"></i> Visited Users</a> -->
-                                                 </td>
+                                            <td><span>{{ each.postivity_logs.all.0.timestamp }}</span></td>
                                         </tr>
                                         {% endfor %}
-                                        <!-- <tr>
-                                            <td class="w-10">
-                                                <img src="{% static 'assets/img/demo/s2.png' %}"  alt="">
-                                            </td>
-                                            <td>
-                                                <h6>Apple Product</h6><small class="text-muted">Mobile Phones</small></td>
-                                            <td>$250</td>
-                                            <td><span class="badge badge-success">Published</span></td>
-                                                 <td>
-                                                     <span><i class="icon icon-data_usage"></i> 5 days ago</span><br>
-                                                     <span><i class="icon icon-timer"></i> 5 September, 2017</span>
-                                                 </td>
-                                                 <td>
-                                                     <a href=""><i class="icon icon-pencil-square-o"></i> Edit item</a>
-                                                 </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="w-10">
-                                                <img src="{% static 'assets/img/demo/s3.png' %}"  alt="">
-                                            </td>
-                                            <td>
-                                                <h6>Apple Product</h6><small class="text-muted">Mobile Phones</small></td>
-                                            <td>$250</td>
-                                            <td><span class="badge badge-danger">Pending</span></td>
-                                                 <td>
-                                                     <span><i class="icon icon-data_usage"></i> 5 days ago</span><br>
-                                                     <span><i class="icon icon-timer"></i> 5 September, 2017</span>
-                                                 </td>
-                                                 <td>
-                                                     <a href=""><i class="icon icon-pencil-square-o"></i> Edit item</a>
-                                                 </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="w-10">
-                                                <img src="{% static 'assets/img/demo/s4.png' %}"  alt="">
-                                            </td>
-                                            <td>
-                                                <h6>Apple Product</h6><small class="text-muted">Mobile Phones</small></td>
-                                            <td>$250</td>
-                                            <td><span class="badge badge-success">Published</span></td>
-                                                 <td>
-                                                     <span><i class="icon icon-data_usage"></i> 5 days ago</span><br>
-                                                     <span><i class="icon icon-timer"></i> 5 September, 2017</span>
-                                                 </td>
-                                                 <td>
-                                                     <a href=""><i class="icon icon-pencil-square-o"></i> Edit item</a>
-                                                 </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="w-10">
-                                                <img src="{% static 'assets/img/demo/s5.png' %}"  alt="">
-                                            </td>
-                                            <td>
-                                                <h6>Apple Product</h6><small class="text-muted">Mobile Phones</small></td>
-                                            <td>$250</td>
-                                            <td><span class="badge badge-primary">Sold Out</span></td>
-                                                 <td>
-                                                     <span><i class="icon icon-data_usage"></i> 5 days ago</span><br>
-                                                     <span><i class="icon icon-timer"></i> 5 September, 2017</span>
-                                                 </td>
-                                                 <td>
-                                                     <a href=""><i class="icon icon-pencil-square-o"></i> Edit item</a>
-                                                 </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="w-10">
-                                                <img src="{% static 'assets/img/demo/s6.png' %}"  alt="">
-                                            </td>
-                                            <td>
-                                                <h6>Apple Product</h6><small class="text-muted">Mobile Phones</small></td>
-                                            <td>$250</td>
-                                            <td><span class="badge badge-warning">Low Stock</span></td>
-                                                 <td>
-                                                     <span><i class="icon icon-data_usage"></i> 5 days ago</span><br>
-                                                     <span><i class="icon icon-timer"></i> 5 September, 2017</span>
-                                                 </td>
-                                                 <td>
-                                                     <a href=""><i class="icon icon-pencil-square-o"></i> Edit item</a>
-                                                 </td>
-                                        </tr> -->
+                                        {% else %}
+                                        <th>No results found</th>
+                                        {% endif %}
                                         </tbody>
                                     </table>
                                 </div>

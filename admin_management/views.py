@@ -4,9 +4,12 @@ from django.contrib import messages
 from django.urls.base import reverse_lazy
 from django.shortcuts import redirect
 from institutes.models import Institute, VisitedUsers
-from usermanagement.models import CustomerProfile, UserFeedback
+from usermanagement.models import CustomerProfile, UserFeedback,UserPositivityLog
 from . forms import UserForm
 from django.contrib.auth import authenticate, login
+from django.db.models import Q
+from functools import reduce
+import operator
 
 
 class InstituitionList(generic.ListView):
@@ -50,6 +53,54 @@ class UserList(generic.ListView):
     template_name = "instituite/users_list.html"
     ordering = ['-member_since']
     model = CustomerProfile
+
+    def get_queryset(self, *args, **kwargs):
+        print(self.request.GET)
+        q = self.request.GET.get('q')
+        if q:
+            filter_list = (Q(phone_number=q)|Q(user__email=q)|Q(user__first_name__icontains=q)|Q(user__last_name__icontains=q))
+            queryset = self.model.objects.filter(filter_list)
+        else:
+            queryset = self.model.objects.all()
+        return queryset
+
+
+class PositiveUserList(generic.ListView):
+    template_name = "instituite/positive_list.html"
+    ordering = ['-member_since']
+    model = CustomerProfile
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = self.model.objects.filter(covid_status='P')
+        return queryset
+
+
+class UserCovidHistoryList(generic.DetailView):
+    model = CustomerProfile
+    template_name = "instituite/covid_history.html"
+
+
+class ChangeCovidStatus(generic.View):
+    model = CustomerProfile
+
+    def post(self, *args, **kwargs):
+        id = self.kwargs.get('pk')
+        try:
+            user_ob = self.model.objects.get(id=id)
+            if user_ob.covid_status == 'N':
+                user_ob.covid_status = 'P'
+            else:
+                user_ob.covid_status = 'N'
+            UserPositivityLog.objects.create(customer=user_ob, covid_status=user_ob.covid_status)
+            user_ob.save()
+            msg = "Successfully updated the covid status of " + user_ob.get_full_name().title()
+            messages.success(self.request, msg)
+            return redirect(self.request.META.get('HTTP_REFERER'))
+        except Exception as e:
+            print(e)
+            messages.error(self.request, "Invalid User ID!.")
+            return redirect(self.request.META.get('HTTP_REFERER'))
+        return queryset
 
 
 class Login(generic.FormView):
