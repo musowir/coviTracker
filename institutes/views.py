@@ -16,6 +16,7 @@ from .serializers import (InstituitionSerializer,
                             InstituiteProfileSerializer, 
                             VisitedUsersSerializer)
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 
 # import firebase_admin
 # from firebase_admin import credentials
@@ -288,7 +289,7 @@ class InstituiteProfile(generics.RetrieveUpdateAPIView):
 class VisitedUsersAPI(generics.ListAPIView):
     serializer_class = VisitedUsersSerializer
 
-    def get_queryset(self, *args, **kwargs):
+    def get(self, *args, **kwargs):
         id = self.kwargs['pk']
         datetime_obj = self.request.GET.get("datetime")
         print(datetime, "1111")
@@ -302,7 +303,9 @@ class VisitedUsersAPI(generics.ListAPIView):
         except Exception as e:
             print(e)
             queryset = []
-        return queryset
+        print("quesryseyt", queryset)
+        queryset = self.serializer_class(queryset, many=True).data
+        return Response({"customer": queryset}, status=status.HTTP_200_OK)
 
 
 #         {"date":"2021-04-11T05:41:00.000+0530",

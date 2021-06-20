@@ -100,7 +100,7 @@ class ChangeCovidStatus(generic.View):
             print(e)
             messages.error(self.request, "Invalid User ID!.")
             return redirect(self.request.META.get('HTTP_REFERER'))
-        return queryset
+        return redirect(self.request.META.get('HTTP_REFERER'))
 
 
 class Login(generic.FormView):

@@ -166,7 +166,7 @@ class CustomerProfile(models.Model):
 
 
 class UserFeedback(models.Model):
-    customer = models.OneToOneField(CustomerProfile, related_name='user_feedback',on_delete = models.CASCADE)
+    customer = models.ForeignKey(CustomerProfile, related_name='user_feedback',on_delete = models.CASCADE)
     feedback = models.TextField(max_length=250, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 

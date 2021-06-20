@@ -120,7 +120,9 @@ class VisitedUsersSerializer(serializers.ModelSerializer):
 
     def get_visited_date(self, obj):
         from datetime import datetime
-        return datetime.strftime(obj.visited_date, "%d/%m/%y %H:%M")
+        import pytz
+        dt_India = obj.visited_date.astimezone(pytz.timezone('Asia/Kolkata'))
+        return datetime.strftime(dt_India, "%d-%m-%Y %H:%M")
     
     class Meta:
         model = VisitedUsers

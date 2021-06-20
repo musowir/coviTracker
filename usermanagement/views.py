@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
-from . models import CustomerProfile
+from . models import CustomerProfile, UserPositivityLog
 
 from usermanagement.serializers import (CustomerProfileSerializer, 
                             UserLoginSerializer, TokenSerializer, 
@@ -104,3 +104,23 @@ class UpdateUserProfile(generics.RetrieveUpdateAPIView):
 
 class CreateFeedack(generics.CreateAPIView):
     serializer_class = UserFeedbackSerializer
+
+
+class ChangeCovidStatus(APIView):
+    model = CustomerProfile
+
+    def post(self, *args, **kwargs):
+        id = self.kwargs.get('pk')
+        try:
+            user_ob = self.model.objects.get(id=id)
+            if user_ob.covid_status == 'N':
+                user_ob.covid_status = 'P'
+            else:
+                user_ob.covid_status = 'N'
+            UserPositivityLog.objects.create(customer=user_ob, covid_status=user_ob.covid_status)
+            user_ob.save()
+            msg = "Successfully updated the covid status of " + user_ob.get_full_name().title()
+            return Response({"msg": msg},status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"msg": msg},status=status.HTTP_200_OK)
