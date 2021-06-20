@@ -289,7 +289,7 @@ class InstituiteProfile(generics.RetrieveUpdateAPIView):
 class VisitedUsersAPI(generics.ListAPIView):
     serializer_class = VisitedUsersSerializer
 
-    def get(self, *args, **kwargs):
+    def get_queryset(self, *args, **kwargs):
         id = self.kwargs['pk']
         datetime_obj = self.request.GET.get("datetime")
         print(datetime, "1111")
@@ -304,8 +304,7 @@ class VisitedUsersAPI(generics.ListAPIView):
             print(e)
             queryset = []
         print("quesryseyt", queryset)
-        queryset = self.serializer_class(queryset, many=True).data
-        return Response({"customer": queryset}, status=status.HTTP_200_OK)
+        return queryset
 
 
 #         {"date":"2021-04-11T05:41:00.000+0530",

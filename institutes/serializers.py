@@ -108,6 +108,7 @@ class AddUserSerializer(serializers.ModelSerializer):
 class VisitedUsersSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     email = serializers.CharField(source='user.email', required=True, validators=[])
+    phone_number = serializers.CharField(source='user.username', required=True, validators=[])
     visited_date = serializers.SerializerMethodField()
 
     def get_name(self, obj):
@@ -126,7 +127,7 @@ class VisitedUsersSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = VisitedUsers
-        fields = ("name", "email", "visited_date")
+        fields = ("name", "email", "phone_number", "visited_date")
 
 
 class InstituiteProfileSerializer(serializers.ModelSerializer):
