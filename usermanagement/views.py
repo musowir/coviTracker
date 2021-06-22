@@ -101,6 +101,45 @@ class UpdateUserProfile(generics.RetrieveUpdateAPIView):
     serializer_class = CustomerProfileUpdateSerializer
     queryset = CustomerProfile.objects.all()
 
+    def put(self, request, *args, **kwargs):
+        # print("INSIDE PUT")
+        # if not request.data.get('password'):
+        data = super(UpdateUserProfile, self).put(request, *args, **kwargs)
+        print("put", data, self.get_object())
+        user_data ={
+            "id": self.get_object().id,
+            "phone_number": self.get_object().phone_number,
+            "email": self.get_object().user.email,
+            "gender": self.get_object().gender,
+            "first_name": self.get_object().user.first_name,
+            "last_name": self.get_object().user.last_name,
+            "otp_verified": self.get_object().otp_verified,
+            "covid_status": self.get_object().get_covid_status_display()
+        }
+        data = {
+                "token": "9031f3a2b872b7fe2b5dac8ceb187977bd372e49",
+                "user_data": {
+                    "id": 32,
+                    "phone_number": "9544073550",
+                    "email": "aniridhdjdj@gmail.com",
+                    "gender": "",
+                    "first_name": "anirudh",
+                    "last_name": "qwert",
+                    "otp_verified": False,
+                    "profile_pic1": "/media/profile_pic/image_dmf1Rf7.jpeg",
+                    "profile_pic2": "/media/profile_pic/image_H9Ic6VD.jpeg",
+                    "profile_pic3": "/media/profile_pic/image_mwdl1uc.jpeg",
+                    "token": "9031f3a2b872b7fe2b5dac8ceb187977bd372e49",
+                    "fcm_token": "fVbkpG0OT6yTvhBPXpd-_X:APA91bE8d1ESN1XpTc47ZH5njaezHLN_qE6wFBiuRDgLf3QPlRLS6HXYV3GkP_6neNmc2dBnmZuYuajrrvQNC6vp-WDLK82QJ7LSULPp12Bqy2khE6f7cPS6LB_aLi-6kAHTOZ_2emsQ",
+                    "covid_status": "Negative"
+                }
+            }
+            
+        return Response(
+                    data={'token':None, 'user_data': CustomerProfileSerializer(self.get_object()).data},
+                    status=status.HTTP_200_OK,
+                    )
+
 
 class CreateFeedack(generics.CreateAPIView):
     serializer_class = UserFeedbackSerializer
