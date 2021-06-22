@@ -151,7 +151,9 @@ class CustomerProfileUpdateSerializer(serializers.ModelSerializer):
             instance.user.last_name = validated_data['user'].get('last_name', instance.user.last_name)
             instance.user.email = validated_data['user'].get('email', instance.user.email)
             if validated_data['user'].get('password'):
+                print("password")
                 instance.user.set_password(validated_data['user'].get('password'))
+            print("password not set")
             instance.user.save()
             instance.phone_number = validated_data.get('phone_number', instance.phone_number)
             instance.profile_pic1 = validated_data.get('profile_pic1', instance.profile_pic1)
