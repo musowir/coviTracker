@@ -134,7 +134,7 @@ class CustomerProfileUpdateSerializer(serializers.ModelSerializer):
     # username = serializers.CharField(source='user.username', required=True, label="Staff Username")
     first_name = serializers.CharField(source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)
-    password = serializers.CharField(source='user.password', required=False)
+    password = serializers.CharField(source='user.password', required=False, allow_null=True)
     
     class Meta:
         model = CustomerProfile
@@ -152,7 +152,7 @@ class CustomerProfileUpdateSerializer(serializers.ModelSerializer):
             instance.user.email = validated_data['user'].get('email', instance.user.email)
             if validated_data['user'].get('password'):
                 instance.user.set_password(validated_data['user'].get('password'))
-                instance.user.save()
+            instance.user.save()
             instance.phone_number = validated_data.get('phone_number', instance.phone_number)
             instance.profile_pic1 = validated_data.get('profile_pic1', instance.profile_pic1)
             instance.save()

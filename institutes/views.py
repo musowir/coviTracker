@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from institutes.models import Institute, VisitedUsers
+from institutes.models import Institute, VisitedUsers, AlertLog
 from usermanagement.models import CustomerProfile
 from .serializers import (InstituitionSerializer, 
                             InstituitionRegistration, 
@@ -112,19 +112,30 @@ class InstituitionLogin(generics.GenericAPIView):
             print("valid")
             staff_obj = serializer.get_profile()
             # staff_data = StaffSerializer(staff_obj).data
-            instituition_data = InstituiteProfileSerializer(staff_obj.my_instituite).data
-            token, _ = Token.objects.get_or_create(user=staff_obj.user)
-            return Response(
-                    data={'token':token.key,
-                    'staff_data': {"id":staff_obj.id, "first_name": staff_obj.user.first_name, "last_name": staff_obj.user.last_name,  "username": staff_obj.user.username},
-                    'instituition_data': instituition_data},
+            if staff_obj.my_instituite.is_verified:
+                instituition_data = InstituiteProfileSerializer(staff_obj.my_instituite).data
+                token, _ = Token.objects.get_or_create(user=staff_obj.user)
+                return Response(
+                        data={'token':token.key,
+                        'staff_data': {"id":staff_obj.id, "first_name": staff_obj.user.first_name, "last_name": staff_obj.user.last_name,  "username": staff_obj.user.username},
+                        'instituition_data': instituition_data,
+                        "message":"Login Success"},
+                        status=status.HTTP_200_OK,
+                        )
+            else:
+                print("Not Verified")
+                return Response(
+                    data={'token': None,
+                    'staff_data': {},
+                    "message":"Institution Not Verifed"},
                     status=status.HTTP_200_OK,
                     )
         else:
             print("Not valid", serializer.errors)
             return Response(
                     data={'token': None,
-                    'staff_data': {}},
+                    'staff_data': {},
+                    "message":"Invalid Login Credentials"},
                     status=status.HTTP_200_OK,
                     )
 
@@ -183,8 +194,8 @@ class AddVisitedUsers(generics.GenericAPIView):
         instituite_id = self.request.data.get('instituite')
         try:
             instituite = Institute.objects.get(id=instituite_id)
-            VisitedUsers.objects.create(instituite=instituite, user=User.objects.all()[0])
-            VisitedUsers.objects.create(instituite=instituite, user=User.objects.all()[1])
+            # VisitedUsers.objects.create(instituite=instituite, user=User.objects.all()[0])
+            # VisitedUsers.objects.create(instituite=instituite, user=User.objects.all()[1])
             user = VisitedUsers.objects.create(instituite=instituite, image=self.request.data['image'])
         except Exception  as e:
             print(e)
@@ -205,19 +216,47 @@ class AddVisitedUsers(generics.GenericAPIView):
                 status=status.HTTP_200_OK,
                 )
             else:
-                return Response(
-                data={"msg": "User npt found."},
-                status=status.HTTP_200_OK,
-                )
+                status_, user_obj = DetectUser(user)
+                print(status_, user_obj)
+                if status_ == True:
+                    user.user = user_obj
+                    user.save()
+                    return Response(
+                    data={"msg": "User added successfully."},
+                    status=status.HTTP_200_OK,
+                    )
+                else:
+                    status_, user_obj = DetectUser(user)
+                    print(status_, user_obj)
+                    if status_ == True:
+                        user.user = user_obj
+                        user.save()
+                        return Response(
+                        data={"msg": "User added successfully."},
+                        status=status.HTTP_200_OK,
+                        )
+                    else:
+                        return Response(
+                        data={"msg": "User not found."},
+                        status=status.HTTP_200_OK,
+                        )
 
 
 class SendAlert(APIView):
 
     def post(self, *args, **kwargs):
         print(self.request.data)
-        institute_id = self.request.data.get("instituition_id")
-        datetime_obj = parser.parse('2018-02-06T13:12:18.1278015Z')
-        visited_users = VisitedUsers.objects.all()
+        institute_id = self.request.data.get("id")
+        # datetime_obj = parser.parse('2018-02-06T13:12:18.1278015Z')
+        datetime_obj = self.request.data.get("date")
+        print(datetime, "1111")
+        if datetime_obj:
+            datetime_obj = parser.parse(datetime_obj)
+        else:
+            datetime_obj = datetime.today()
+        instituite = Institute.objects.get(id=institute_id)
+        visited_users = VisitedUsers.objects.filter(instituite__id=institute_id, visited_date__gte=datetime_obj, user__isnull=False)
+        AlertLog.objects.create(instituite=instituite)
         # FCM Push
         if not firebase_admin._apps:
             cred = credentials.Certificate("D:\Freelancer\Face_recognition-master\institutes\covitracker-6effa-firebase-adminsdk-g0e6o-f24a1dc3b5.json")
@@ -268,8 +307,10 @@ class InstituiteProfile(generics.RetrieveUpdateAPIView):
     queryset = Institute.objects.all()
 
     def put(self, request, *args, **kwargs):
+        print(self.request.data)
         serializer = self.serializer_class(data=self.request.data)
         if serializer.is_valid():
+            print("VALIDD")
             data = self.update(request, *args, **kwargs)
             institute_obj = self.get_object()
             staff_obj = institute_obj.staff
@@ -278,6 +319,7 @@ class InstituiteProfile(generics.RetrieveUpdateAPIView):
                                 'instituition_data': InstituiteProfileSerializer(instance=institute_obj).data,
                                 },status=status.HTTP_200_OK)
         else:
+            print("NOT VALIDD")
             print(serializer.errors)
             return Response(data={'token': None,
                         'staff_data': {},
@@ -290,6 +332,7 @@ class VisitedUsersAPI(generics.ListAPIView):
     serializer_class = VisitedUsersSerializer
 
     def get_queryset(self, *args, **kwargs):
+        print(self.request.data)
         id = self.kwargs['pk']
         datetime_obj = self.request.GET.get("datetime")
         print(datetime, "1111")
