@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from institutes.models import Institute, VisitedUsers, AlertLog
+from institutes.models import Institute, VisitedUsers
 from usermanagement.models import CustomerProfile
 from .serializers import (InstituitionSerializer, 
                             InstituitionRegistration, 
@@ -256,7 +256,7 @@ class SendAlert(APIView):
             datetime_obj = datetime.today()
         instituite = Institute.objects.get(id=institute_id)
         visited_users = VisitedUsers.objects.filter(instituite__id=institute_id, visited_date__gte=datetime_obj, user__isnull=False)
-        AlertLog.objects.create(instituite=instituite)
+        # AlertLog.objects.create(instituite=instituite)
         # FCM Push
         if not firebase_admin._apps:
             cred = credentials.Certificate("D:\Freelancer\Face_recognition-master\institutes\covitracker-6effa-firebase-adminsdk-g0e6o-f24a1dc3b5.json")
