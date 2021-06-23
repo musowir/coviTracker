@@ -34,7 +34,10 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
         return token.key
 
     def get_covid_status(self, obj):
-        return obj.get_covid_status_display()
+        if obj.covid_status == "N":
+            return False
+        else:
+            return True
 
     class Meta:
         model = CustomerProfile
@@ -135,10 +138,17 @@ class CustomerProfileUpdateSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)
     password = serializers.CharField(source='user.password', required=False, allow_null=True)
+    covid_status = serializers.SerializerMethodField()
     
     class Meta:
         model = CustomerProfile
         fields = ("id", "first_name", "last_name", "phone_number", "email", "password")
+
+    def get_covid_status(self, obj):
+        if obj.covid_status == "N":
+            return False
+        else:
+            return True
 
     def update(self, instance, validated_data):
         print('validated_data', validated_data)
