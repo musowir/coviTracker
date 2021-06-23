@@ -142,7 +142,7 @@ class CustomerProfileUpdateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CustomerProfile
-        fields = ("id", "first_name", "last_name", "phone_number", "email", "password")
+        fields = ("id", "first_name", "last_name", "phone_number", "email", "password", "covid_status")
 
     def get_covid_status(self, obj):
         if obj.covid_status == "N":
