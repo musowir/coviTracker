@@ -3,22 +3,24 @@ from django.views import generic
 from django.contrib import messages
 from django.urls.base import reverse_lazy
 from django.shortcuts import redirect
-from institutes.models import Institute, VisitedUsers
+from institutes.models import Institute, VisitedUsers, AlertLog
 from usermanagement.models import CustomerProfile, UserFeedback,UserPositivityLog
 from . forms import UserForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from functools import reduce
 import operator
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class InstituitionList(generic.ListView):
+class InstituitionList(LoginRequiredMixin, generic.ListView):
     model = Institute
     template_name = "instituite/list.html"
+    login_url = '/login/'
 
 
-class InstituitionVerification(generic.View):
-
+class InstituitionVerification(LoginRequiredMixin, generic.View):
+    login_url = '/login/'
     def get(self, *args, **kwargs):
         id = self.kwargs['pk']
         try:
@@ -33,10 +35,11 @@ class InstituitionVerification(generic.View):
         return redirect(reverse_lazy('InstituitionList'))
 
 
-class VisitedUserList(generic.ListView):
+class VisitedUserList(LoginRequiredMixin, generic.ListView):
     template_name = "instituite/users_visited.html"
     ordering = ['-visited_date']
     model = VisitedUsers
+    login_url = '/login/'
 
     def get_queryset(self, *args, **kwargs):
         id = self.kwargs['pk']
@@ -49,10 +52,11 @@ class VisitedUserList(generic.ListView):
         return queryset
 
 
-class UserList(generic.ListView):
+class UserList(LoginRequiredMixin, generic.ListView):
     template_name = "instituite/users_list.html"
     ordering = ['-member_since']
     model = CustomerProfile
+    login_url = '/login/'
 
     def get_queryset(self, *args, **kwargs):
         print(self.request.GET)
@@ -65,22 +69,24 @@ class UserList(generic.ListView):
         return queryset
 
 
-class PositiveUserList(generic.ListView):
+class PositiveUserList(LoginRequiredMixin, generic.ListView):
     template_name = "instituite/positive_list.html"
     ordering = ['-member_since']
     model = CustomerProfile
+    login_url = '/login/'
 
     def get_queryset(self, *args, **kwargs):
         queryset = self.model.objects.filter(covid_status='P')
         return queryset
 
 
-class UserCovidHistoryList(generic.DetailView):
+class UserCovidHistoryList(LoginRequiredMixin, generic.DetailView):
     model = CustomerProfile
     template_name = "instituite/covid_history.html"
+    login_url = '/login/'
 
-
-class ChangeCovidStatus(generic.View):
+class ChangeCovidStatus(LoginRequiredMixin, generic.View):
+    login_url = '/login/'
     model = CustomerProfile
 
     def post(self, *args, **kwargs):
@@ -134,6 +140,21 @@ class Login(generic.FormView):
         return redirect(self.request.META.get('HTTP_REFERER'))
 
 
-class FeedbackList(generic.ListView):
+class FeedbackList(LoginRequiredMixin, generic.ListView):
     model = UserFeedback
     template_name = "instituite/users_feedback.html"
+    login_url = '/login/'
+
+
+class Logout(generic.View):
+
+    def get(self, *args, **kwargs):
+        logout(self.request)
+        return redirect(reverse_lazy('Login'))
+
+
+class AlertList(generic.ListView):
+    model = AlertLog
+    template_name = "instituite/alert_list.html"
+    login_url = '/login/'
+

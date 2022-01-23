@@ -89,7 +89,9 @@
             <li><a href="{% url 'InstituitionList' %}"><i class="icon icon-user-circle"></i>Institution List</a>
                 <li><a href="{% url 'PositiveUserList' %}"><i class="icon icon-user-circle"></i>Covid Positive List</a>
                     <li><a href="{% url 'FeedbackList' %}"><i class="icon icon-user-circle"></i>Feedback List</a>
-                    <!-- <li><a href="dashboard-inbox.html">
+                        <li><a href="{% url 'AlertList' %}"><i class="icon icon-user-circle"></i>Alert List</a>
+                            <li><a href="{% url 'Logout' %}"><i class="icon icon-user-circle"></i>Logout</a>
+                                <!-- <li><a href="dashboard-inbox.html">
                 <i class="icon icon-package blue-text"></i>
                 <span>Inbox</span>
                 <span class="badge badge-primary pull-right">20</span>
@@ -241,10 +243,17 @@
                                 <div class="table-responsive">
                                     <table class="table table-hover ">
                                         <tbody>
+                                            <th>Instituite</th>
+                                            <th></th>
+                                            <th>Status</th>
+                                            <th>Status</th>
+                                            <th>Visited Users</th>
                                         {% for each in object_list %}
                                         <tr>
                                             <td class="w-10">
-                                                <img src="{% if each.image %}{{ each.image.url }}{% endif %}"  alt="">
+                                                {% if each.image %}
+                                                <img src="{{ each.image.url }}"  alt="">
+                                                {% endif %}
                                             </td>
                                             <td>
                                         <h6>{{each.name}}</h6><small class="text-muted">{{each.location}}</small></td>
@@ -258,11 +267,13 @@
                                                      <span>{{ each.staff.user.email }}</span>
                                                  </td>
                                                  <td>
-                                                     <a href="{% url 'InstituitionVerification' each.id %}"> Click to verify</a>
-                                                 </td>
-                                                 <td>
                                                      <a href="{% url 'VisitedUserList' each.id %}"> Visited Users</a>
                                                  </td>
+                                                 {% if not each.is_verified %}
+                                                 <td>
+                                                     <a href="{% url 'InstituitionVerification' each.id %}"> Click to verify</a>
+                                                 </td>
+                                                 {% endif %}
                                         </tr>
                                         {% endfor %}
                                         <!-- <tr>

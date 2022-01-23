@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from institutes.models import Institute, VisitedUsers
+from institutes.models import Institute, VisitedUsers, AlertLog
 from usermanagement.models import CustomerProfile
 from .serializers import (InstituitionSerializer, 
                             InstituitionRegistration, 
@@ -18,11 +18,11 @@ from .serializers import (InstituitionSerializer,
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 
-# import firebase_admin
-# from firebase_admin import credentials
+import firebase_admin
+from firebase_admin import credentials
 from datetime import datetime
 from dateutil import parser
-# from firebase_admin import credentials, messaging
+from firebase_admin import credentials, messaging
 
 class StaffLogin(generic.View):
 
@@ -141,48 +141,48 @@ class InstituitionLogin(generics.GenericAPIView):
 
 
 def DetectUser(user):
-    # import cv2
-    # import os
-    # import face_recognition
-    # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    # loc1 = str(BASE_DIR) + str(user.image.url)
-    # # img = cv2.imread(loc1)
-    # loc1 = os.path.abspath(loc1)
-    # for each in CustomerProfile.objects.all():
-    #     if each.profile_pic1:
-    #         # print(each.id)
-    #         loc2 =  str(BASE_DIR) + str(each.profile_pic1.url)
-    #         loc2 = os.path.abspath(loc2)
-    #         print("loc1", loc1)
-    #         print("loc2", loc2)
-    #         # loc1 = os.path.abspath("D:\Freelancer\Face_recognition-master\media\profile_pic\image_kNXo3Bw.jpeg")
-    #         # # loc1 = r"F:/Photos/july2020.IMG-20191023-WA0016.jpg"
-    #         # loc2 = os.path.abspath("D:/WhatsApp Image 2021-04-11 at 7.04.34 PM.jpeg")
-    #         # face_1_image = face_recognition.load_image_file(loc2)
-    #         # print(face_1_image)
-    #         # face_1_face_encoding = face_recognition.face_encodings(face_1_image)[0]
+    import cv2
+    import os
+    import face_recognition
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    loc1 = str(BASE_DIR) + str(user.image.url)
+    # img = cv2.imread(loc1)
+    loc1 = os.path.abspath(loc1)
+    for each in CustomerProfile.objects.all():
+        if each.profile_pic1:
+            # print(each.id)
+            loc2 =  str(BASE_DIR) + str(each.profile_pic1.url)
+            loc2 = os.path.abspath(loc2)
+            print("loc1", loc1)
+            print("loc2", loc2)
+            # loc1 = os.path.abspath("D:\Freelancer\Face_recognition-master\media\profile_pic\image_kNXo3Bw.jpeg")
+            # # loc1 = r"F:/Photos/july2020.IMG-20191023-WA0016.jpg"
+            # loc2 = os.path.abspath("D:/WhatsApp Image 2021-04-11 at 7.04.34 PM.jpeg")
+            # face_1_image = face_recognition.load_image_file(loc2)
+            # print(face_1_image)
+            # face_1_face_encoding = face_recognition.face_encodings(face_1_image)[0]
 
-    #         # small_frame = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)
+            # small_frame = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)
 
-    #         # rgb_small_frame = small_frame[:, :, ::-1]
+            # rgb_small_frame = small_frame[:, :, ::-1]
 
-    #         # face_locations = face_recognition.face_locations(rgb_small_frame)
-    #         # face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+            # face_locations = face_recognition.face_locations(rgb_small_frame)
+            # face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
-    #         # check=face_recognition.compare_faces(face_1_face_encoding, face_encodings)
-    #         known_image = face_recognition.load_image_file(loc1)
-    #         unknown_image = face_recognition.load_image_file(loc2)
+            # check=face_recognition.compare_faces(face_1_face_encoding, face_encodings)
+            known_image = face_recognition.load_image_file(loc1)
+            unknown_image = face_recognition.load_image_file(loc2)
 
-    #         # print("known_image", known_image)
-    #         # print("unknown_image", unknown_image)
+            # print("known_image", known_image)
+            # print("unknown_image", unknown_image)
 
-    #         biden_encoding = face_recognition.face_encodings(known_image)[0]
-    #         unknown_encoding = face_recognition.face_encodings(unknown_image)[0]
-    #         results = face_recognition.compare_faces([biden_encoding], unknown_encoding)
-    #         print("results", results)
-    #         if results[0]  == True:
-    #             print("check", results)
-    #             return True, each.user
+            biden_encoding = face_recognition.face_encodings(known_image)[0]
+            unknown_encoding = face_recognition.face_encodings(unknown_image)[0]
+            results = face_recognition.compare_faces([biden_encoding], unknown_encoding)
+            print("results", results)
+            if results[0]  == True:
+                print("check", results)
+                return True, each.user
     return  False, None
 
 
@@ -256,7 +256,7 @@ class SendAlert(APIView):
             datetime_obj = datetime.today()
         instituite = Institute.objects.get(id=institute_id)
         visited_users = VisitedUsers.objects.filter(instituite__id=institute_id, visited_date__gte=datetime_obj, user__isnull=False)
-        # AlertLog.objects.create(instituite=instituite)
+        AlertLog.objects.create(instituite=instituite)
         # FCM Push
         if not firebase_admin._apps:
             cred = credentials.Certificate("D:\Freelancer\Face_recognition-master\institutes\covitracker-6effa-firebase-adminsdk-g0e6o-f24a1dc3b5.json")

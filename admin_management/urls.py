@@ -27,4 +27,7 @@ urlpatterns = [
     path('change-covid-status/<int:pk>/', views.ChangeCovidStatus.as_view(), name="ChangeCovidStatus"),
     path('visited-users-list/<int:pk>/', views.VisitedUserList.as_view(), name="VisitedUserList"),
     path('', views.Login.as_view(), name="Login"),
+    path('login/', views.Login.as_view(), name="Login"),
+    path('logout', views.Logout.as_view(), name="Logout"),
+    path('alert-list', views.AlertList.as_view(), name="AlertList"),
 ]

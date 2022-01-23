@@ -27,3 +27,8 @@ class VisitedUsers(models.Model):
     instituite = models.ForeignKey(Institute, on_delete=models.CASCADE)
     visited_date = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='images', null=True, blank=True)
+
+
+class AlertLog(models.Model):
+    instituite = models.ForeignKey(Institute, on_delete=models.CASCADE)
+    alert_date = models.DateTimeField(auto_now=True)

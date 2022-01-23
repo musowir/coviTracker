@@ -1,1 +1,34 @@
 1. pip install firebase-admin
+
+User
+
+username nt required for profile edit in User case
+if phone number is changed then, change user anme of user
+
+instituition username can be edited
+
+
+⚪Logout
+⚪ Manage profile (view profile, edit details, change password)
+⚪View positivity history (current status, last positive and negative dates )
+⚪ Report as positive
+⚪ Send feedback to admin 
+⚪otp verification (! Low priority)
+
+Institution
+⚪Logout done
+⚪Manage profile (view and edit) done
+⚪ View user visit history by date api done
+⚪ Send alert to admin by date and time Not req
+
+Handle 2 cases
+1. Visit of unregistered user
+2. Visit of user who is currently positive.
+
+
+Admin
+⚪ Positivity list ( view, add positive case by date, mark a user as negative by date )
+⚪ View feedback from user 
+⚪View alerts from institutions
+⚪Notify alerts to user matching date and institution
+⚪View positivity reported from user
